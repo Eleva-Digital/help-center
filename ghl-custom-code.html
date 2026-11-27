@@ -233,8 +233,11 @@
 #elh .view{animation:ehView .5s cubic-bezier(.2,.8,.2,1)}
 @keyframes ehView{from{opacity:0;transform:translateY(14px)}}
 
+#elh .art,#elh .art-wrap > *{min-width:0}
+#elh .prose *{max-width:100%}
+#elh .prose pre,#elh .prose code{white-space:pre-wrap;word-break:break-word}
 @media (max-width:900px){
-  #elh .art-wrap{grid-template-columns:1fr}
+  #elh .art-wrap{grid-template-columns:minmax(0,1fr)}
   #elh .side{position:static}
   #elh .toc-card{display:none}
   #elh .cats{grid-template-columns:repeat(2,1fr)}

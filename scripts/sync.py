@@ -275,8 +275,32 @@ def rebuild():
         if a["c"] in allowed and a["t"] and not agency_only(a): keep[a["id"]] = a
     write_outputs(keep, cats, ren, prune=True, descs={c["id"]: c["d"] for c in smap})
 
+ART_LINK = re.compile(r'href="https?://(?:help\.(?:go)?highlevel\.com|help\.leadconnectorhq\.com|gohighlevelassist\.freshdesk\.com)(?:/[a-z]{2}(?:-[A-Z]{2})?)?/support/solutions/articles/(\d+)[^"]*"', re.I)
+OTHER_LINK = re.compile(r'<a href="https?://[^"/]*(?:highlevel|leadconnector|marketplace\.eleva\.com|freshdesk)[^"]*"[^>]*>(.*?)</a>', re.I | re.S)
+API_HOSTS = re.compile(r'https?://(?:services|backend|api|link|rest)\.(?:leadconnectorhq|msgsndr)\.com', re.I)
+def fix_links(h):
+    """Point article links inside our help center; unlink other platform pages (keep real API endpoints)."""
+    h = ART_LINK.sub(r'href="#/a/\1"', h)
+    h = re.sub(r'href="#/a/(\d+)[^"\d][^"]*"', r'href="#/a/\1"', h)
+    def unlink(m):
+        return m.group(0) if API_HOSTS.search(m.group(0)) else m.group(1)
+    h = OTHER_LINK.sub(unlink, h)
+    h = re.sub(r'(?i)marketplace\.eleva\.com/docs/ghl/', "", h)
+    h = re.sub(r'href="#/a/(\d+)"\s+target="_blank"\s+rel="noopener"', r'href="#/a/\1"', h)
+    # tidy empty spacing left by the source editor
+    h = re.sub(r"<(p|div)( class=\"blk\")?>(\s|&nbsp;| |<br>)*</\1>", "", h)
+    h = re.sub(r"(<br>\s*){2,}", "<br>", h)
+    h = re.sub(r"(<(?:p|li|div[^>]*)>)\s*<br>", r"\1", h)
+    h = re.sub(r"<br>\s*(</(?:p|li|div)>)", r"\1", h)
+    # heading anchors (id="..." / href="#...") carry the old brand name too
+    h = re.sub(r'((?:id|href)="#?)([^"/]*)"', lambda m: m.group(1) + re.sub(r"(?i)go-?high-?level|high-?level|lead-?connector|\bGHL\b", CFG["brand"], m.group(2)) + '"', h)
+    return h
+
 def write_outputs(keep, cats, ren, prune, descs=None):
     t0 = time.time()
+    dead = re.compile(r'<a [^>]*?href="#/a/(\d+)"[^>]*>(.*?)</a>', re.S)
+    for a in keep.values():
+        a["html"] = dead.sub(lambda m: m.group(0) if m.group(1) in keep else m.group(2), fix_links(a.get("html", "")))
 
     # folders per category
     folders = {}
@@ -284,7 +308,7 @@ def write_outputs(keep, cats, ren, prune, descs=None):
         folders.setdefault(a["c"], {}).setdefault(a["f"], {"id": a["f"], "n": a["fn"], "count": 0})["count"] += 1
     index = {
         "updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "count": len(keep),
-        "cats": [{"id": cid, "n": n, "d": (descs or {}).get(cid, ""), "count": sum(f["count"] for f in folders.get(cid, {}).values()),
+        "cats": [{"id": cid, "n": n, "d": "" if re.search(r"(?i)agenc|\$\d|plan\b|pricing", (descs or {}).get(cid, "")) else (descs or {}).get(cid, ""), "count": sum(f["count"] for f in folders.get(cid, {}).values()),
                   "folders": sorted(folders.get(cid, {}).values(), key=lambda f: f["n"].lower())} for cid, n in cats if cid in folders],
         "arts": [[a["id"], a["t"], a["c"], a["f"], a["x"], a["k"], a["m"]] for a in sorted(keep.values(), key=lambda a: a["t"].lower())],
         "popular": [x for x in CFG.get("popular", []) if x in keep],
