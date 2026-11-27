@@ -1,0 +1,45 @@
+{
+  "source": "https://help.gohighlevel.com",
+  "brand": "Eleva",
+  "appDomain": "app.elevadigital.io",
+  "siteDomain": "elevadigital.io",
+  "hideCategories": [
+    "LevelUp 2026",
+    "Customer Support",
+    "Agency View",
+    "SaaS Configurator",
+    "HighLevel Affiliates Program",
+    "Account Snapshots",
+    "Add-ons & Sales Trainings",
+    "University",
+    "Reselling Products",
+    "Agency Reporting",
+    "Eliza Agent Platform",
+    "GoKollab",
+    "Developer Resources",
+    "Client App Builder",
+    "Industry Guides",
+    "Industries"
+  ],
+  "hideFolderPatterns": [
+    "agency", "saas", "rebill", "resell", "white[ -]?label", "snapshot", "affiliate program", "partner", "university",
+    "prospect", "lc premium", "wordpress reselling", "billing & subscription", "sub-?account management"
+  ],
+  "hideTitlePatterns": [
+    "\\bagenc(y|ies)\\b", "\\bsaas\\b", "rebill", "resell", "white[ -]?label", "whitelabel", "\\bsnapshots?\\b",
+    "(create|creating|add|adding|delete|deleting|transfer|transferring|move|moving|pause|pausing|restore|restoring|limit|limits)\\b.{0,25}sub-?accounts?",
+    "sub-?accounts?\\b.{0,25}(creation|transfer|limit|limits|deletion|pausing|restore)",
+    "affiliate program", "partner program", "\\breseller", "prospecting tool", "lc premium", "staff permissions for agency",
+    "custom (menu|javascript|css) (link|for|in) (the )?agency", "agency (level|settings|view|dashboard|branding)", "\\bwl app\\b", "desktop app branding",
+    "marketplace app (development|developer)", "build(ing)? (an? )?(marketplace )?app", "\\boauth\\b", "\\bapi (key|v1|v2|access)", "developer",
+    "release notes", "changelog", "what'?s new", "product updates?", "office hours", "webinar", "summit", "levelup", "\\bevent recap",
+    "pricing (plan|change)", "\\bplans? (and|&) pricing", "billing (for|of) (your )?(agency|account)", "support (ticket|team|hours|portal)", "contact (our )?support",
+    "\\bbeta (program|access)\\b", "deprecat"
+  ],
+  "renameCategories": {
+    "Getting Started w/ HighLevel": "Getting Started",
+    "Getting Started w/ Eleva": "Getting Started",
+    "Custom Objects.": "Custom Objects"
+  },
+  "popular": []
+}
