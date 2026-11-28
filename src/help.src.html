@@ -166,6 +166,14 @@
 #elh .art .meta{display:flex;flex-wrap:wrap;gap:8px 16px;font-size:13px;color:var(--muted);font-weight:600;padding-bottom:20px;border-bottom:1px solid var(--line);margin-bottom:24px}
 #elh .art .meta span{display:inline-flex;align-items:center;gap:6px}
 #elh .art .meta svg{width:14px;height:14px}
+#elh .tr-note{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#elh .tr-note svg{width:16px;height:16px;color:var(--accent);flex:none}
+#elh .tr-note span{flex:1;min-width:160px}
+#elh .tr-note button{font:inherit;font-weight:700;color:var(--link);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#elh .prose font{background:none!important;box-shadow:none!important}
+body{top:0!important}
+.goog-te-banner-frame,iframe.skiptranslate,body>.skiptranslate,#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,.VIpgJd-ZVi9od-aZ2wEe-OiiCO{display:none!important}
+.goog-text-highlight{background:none!important;box-shadow:none!important}
 #elh .note{font-size:13px;color:var(--muted);background:var(--surface2);border:1px solid var(--line);padding:10px 14px;border-radius:12px;margin-bottom:20px}
 #elh .prose{font-size:16px;line-height:1.75;color:color-mix(in srgb,var(--text) 90%,var(--muted));overflow-wrap:anywhere}
 #elh .prose > * + *{margin-top:14px}
@@ -277,7 +285,7 @@
   <div class="progress" id="elh-prog"></div>
   <div class="fx" aria-hidden="true"><div class="aurora a1"></div><div class="aurora a2"></div><div class="aurora a3"></div><div class="grid-bg"></div><canvas id="elh-cv"></canvas></div>
   <div class="wrap">
-    <header id="elh-hdr">
+    <header id="elh-hdr" class="notranslate" translate="no">
       <a class="brand" href="#/" aria-label="Eleva Help Center">
         <img class="logo-dark" src="{{LOGO_WHITE}}" alt="Eleva">
         <img class="logo-light" src="{{LOGO_DARK}}" alt="Eleva">
@@ -295,7 +303,7 @@
 
     <main id="elh-main"><div style="padding:80px 0"><div class="skel" style="width:50%;margin:0 auto"></div><div class="skel" style="width:70%;margin:16px auto 0"></div></div></main>
 
-    <section class="block reveal">
+    <section class="block reveal notranslate" translate="no">
       <div class="card support">
         <div class="sup-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3.5 7 8.5 6 8.5-6"/></svg></div>
         <div>
@@ -310,7 +318,7 @@
       </div>
     </section>
 
-    <footer>
+    <footer class="notranslate" translate="no">
       <div style="display:flex;align-items:center;gap:12px">
         <img class="logo-dark" id="elh-f-dark" alt="Eleva"><img class="logo-light" id="elh-f-light" alt="Eleva">
         <span>© <span id="elh-year"></span> Eleva Digital</span>
@@ -322,7 +330,7 @@
       </nav>
     </footer>
   </div>
-  <div class="lb" id="elh-lb"><img alt=""></div>
+  <div class="lb notranslate" id="elh-lb"><img alt=""></div>
 </div>
 
 <script>
@@ -348,7 +356,7 @@
       articles:"articles", cats:"categories", updatedM:"updated monthly", popular:"Popular articles", browse:"Browse by category", browseS:"Pick a topic to see every guide",
       home:"Home", noRes:"No articles found for “{q}”. Try fewer or different words.", seeAll:"See all {n} results", results:"{n} results for “{q}”", resultsT:"Search results",
       updated:"Updated {d}", read:"{n} min read", onPage:"On this page", related:"Related articles", copyLink:"Copy link", copiedLink:"Link copied!", back:"Back", print:"Print",
-      enNote:"", folderN:"{n} articles", inCat:"{n} articles in {f} sections",
+      enNote:"", trOn:"", trOff:"", trShowOrig:"", trTranslate:"", folderN:"{n} articles", inCat:"{n} articles in {f} sections",
       supK:"Support", supH:"Still need help?", supP:"Can't find what you're looking for? Our support team is here for you. Send us an email and we'll get back to you as soon as possible.",
       copy:"Copy", copied:"Copied!", statusLink:"System status", appLink:"Go to Eleva", loadErr:"We couldn't load the help center right now. Please refresh the page in a moment.",
       notFound:"This article couldn't be found. It may have been moved or removed.", themeAria:"Toggle light or dark mode" },
@@ -358,6 +366,7 @@
       home:"Início", noRes:"Nenhum artigo encontrado para “{q}”. Tente menos palavras ou termos em inglês.", seeAll:"Ver todos os {n} resultados", results:"{n} resultados para “{q}”", resultsT:"Resultados da busca",
       updated:"Atualizado em {d}", read:"{n} min de leitura", onPage:"Nesta página", related:"Artigos relacionados", copyLink:"Copiar link", copiedLink:"Link copiado!", back:"Voltar", print:"Imprimir",
       enNote:"Os artigos estão em inglês. Dica: use o tradutor do seu navegador (clique com o botão direito → Traduzir para o português).",
+      trOn:"Traduzido automaticamente do inglês.", trOff:"Exibindo o artigo original em inglês.", trShowOrig:"Ver original", trTranslate:"Traduzir para português",
       folderN:"{n} artigos", inCat:"{n} artigos em {f} seções",
       supK:"Suporte", supH:"Ainda precisa de ajuda?", supP:"Não encontrou o que procurava? Nossa equipe de suporte está aqui para ajudar. Envie um e-mail e responderemos o mais rápido possível.",
       copy:"Copiar", copied:"Copiado!", statusLink:"Status do sistema", appLink:"Acessar a Eleva", loadErr:"Não foi possível carregar a central de ajuda agora. Atualize a página em instantes.",
@@ -507,7 +516,7 @@
     root.classList.remove("view-inner", "view-article");
     var pop = popularList();
     var chips = TOPICS[LANG].map(function(t){ return '<button class="chip" type="button" data-q="' + esc(TOPIC_Q[t] || t) + '">' + esc(t) + '</button>'; }).join("");
-    main.innerHTML = '<div class="view">' +
+    main.innerHTML = '<div class="view notranslate" translate="no">' +
       '<div class="hero"><span class="kicker">' + ic("doc", 2) .replace("<svg", '<svg width="14" height="14"') + '<span><b>' + IDX.count.toLocaleString(T("locale")) + '</b> ' + esc(T("articles")) + ' · ' + esc(T("updatedM")) + '</span></span>' +
       '<h1>' + esc(T("h1")) + '</h1><p class="sub">' + esc(T("sub")) + '</p>' + searchBox("elh-q") + '<div class="chips">' + chips + '</div></div>' +
       '<section class="block reveal"><div class="block-h"><h2>' + esc(T("popular")) + '</h2></div><div class="card pop">' +
@@ -529,7 +538,7 @@
     var c = CATS[id]; if (!c) return viewHome();
     root.classList.add("view-inner"); root.classList.remove("view-article");
     var byF = {}; ARTS.forEach(function(a){ if (a.c === id) (byF[a.f] = byF[a.f] || []).push(a); });
-    main.innerHTML = '<div class="view">' + crumbs([[cn(c.n)]]) +
+    main.innerHTML = '<div class="view notranslate" translate="no">' + crumbs([[cn(c.n)]]) +
       '<div class="page-h"><span class="ci">' + ic(catIcon(c.n)) + '</span><div><h1>' + esc(cn(c.n)) + '</h1><p>' + esc(T("inCat", { n:c.count, f:c.folders.length })) + '</p></div></div>' +
       c.folders.map(function(f, i){
         var list = (byF[f.id] || []); var open = openF ? f.id === openF : (c.folders.length <= 3 || i === 0);
@@ -543,7 +552,7 @@
   function viewSearch(q){
     root.classList.add("view-inner"); root.classList.remove("view-article");
     var r = search(q);
-    main.innerHTML = '<div class="view">' + crumbs([[T("resultsT")]]) + searchBox("elh-q2") +
+    main.innerHTML = '<div class="view notranslate" translate="no">' + crumbs([[T("resultsT")]]) + searchBox("elh-q2") +
       '<section class="block"><div class="block-h"><h2>' + esc(T("results", { n:r.length, q:q })) + '</h2></div>' +
       (r.length ? '<div class="card"><ul class="alist" style="padding:8px">' + r.slice(0, 120).map(function(a){ return artItem(a, q); }).join("") + '</ul></div>' : '<div class="card" style="padding:26px;text-align:center;color:var(--muted)">' + esc(T("noRes", { q:q })) + '</div>') + '</section></div>';
     var i = $("elh-q2"); i.value = q; bindSearch(i, $("elh-q2-r"));
@@ -553,16 +562,17 @@
   function viewArticle(id){
     root.classList.add("view-inner", "view-article");
     var meta = BYID[id];
-    main.innerHTML = '<div class="view">' + (meta ? crumbs([[cn(CATS[meta.c] ? CATS[meta.c].n : ""), "#/c/" + meta.c], [FOLD[meta.f] ? FOLD[meta.f].n : "", "#/c/" + meta.c + "/" + meta.f]]) : crumbs([])) +
+    var tr = LANG === "pt" && !GT.orig && !GT.failed, NT = ' class="notranslate" translate="no"';
+    main.innerHTML = '<div class="view' + (tr ? '' : ' notranslate') + '"><div' + NT + '>' + (meta ? crumbs([[cn(CATS[meta.c] ? CATS[meta.c].n : ""), "#/c/" + meta.c], [FOLD[meta.f] ? FOLD[meta.f].n : "", "#/c/" + meta.c + "/" + meta.f]]) : crumbs([])) + '</div>' +
       '<div class="art-wrap"><article class="card art"><div class="skel" style="width:70%;height:26px"></div><div class="skel" style="margin-top:20px"></div><div class="skel" style="margin-top:12px;width:85%"></div></article><aside class="side"></aside></div></div>';
     window.scrollTo(0, 0);
     getArt(id).then(function(a){
       if (location.hash.indexOf("#/a/" + id) !== 0) return;
       var mins = Math.max(1, Math.round((a.w || 200) / 220));
       var art = main.querySelector(".art");
-      art.innerHTML = '<h1 class="at">' + esc(a.t) + '</h1><div class="meta"><span>' + ic("cal") + esc(T("updated", { d:fmtDate(a.m) })) + '</span><span>' + ic("clock") + esc(T("read", { n:mins })) + '</span></div>' +
-        (T("enNote") ? '<div class="note">' + esc(T("enNote")) + '</div>' : "") + '<div class="prose">' + a.html + '</div>' +
-        '<div class="art-actions"><button class="btn" type="button" id="elh-back">' + ic("back") + esc(T("back")) + '</button><button class="btn" type="button" id="elh-cl">' + ic("link") + '<span>' + esc(T("copyLink")) + '</span></button><button class="btn" type="button" id="elh-pr">' + ic("print") + esc(T("print")) + '</button></div>';
+      art.innerHTML = '<h1 class="at">' + esc(a.t) + '</h1><div class="meta notranslate" translate="no"><span>' + ic("cal") + esc(T("updated", { d:fmtDate(a.m) })) + '</span><span>' + ic("clock") + esc(T("read", { n:mins })) + '</span></div>' +
+        trNote(tr) + '<div class="prose">' + a.html + '</div>' +
+        '<div class="art-actions notranslate" translate="no"><button class="btn" type="button" id="elh-back">' + ic("back") + esc(T("back")) + '</button><button class="btn" type="button" id="elh-cl">' + ic("link") + '<span>' + esc(T("copyLink")) + '</span></button><button class="btn" type="button" id="elh-pr">' + ic("print") + esc(T("print")) + '</button></div>';
       // headings -> ids + toc
       var hs = art.querySelectorAll(".prose h2"), toc = [];
       hs.forEach(function(h, i){ if (!h.id) h.id = "s-" + i; toc.push('<a data-to="' + esc(h.id) + '">' + esc(h.textContent.trim()) + '</a>'); });
@@ -574,8 +584,30 @@
       $("elh-cl").onclick = function(){ var b = this, s = b.querySelector("span"); copyText(location.href.split("#")[0] + "#/a/" + a.id, function(){ s.textContent = T("copiedLink"); b.classList.add("ok"); setTimeout(function(){ s.textContent = T("copyLink"); b.classList.remove("ok"); }, 1800); }); };
       spy(hs);
       setTitle(a.t);
+      var tb = $("elh-tr"); if (tb) tb.onclick = function(){ GT.orig = !GT.orig; viewArticle(id); };
+      if (tr) gtOn();
     }).catch(function(){ main.querySelector(".art").innerHTML = '<p style="color:var(--muted)">' + esc(T("notFound")) + '</p>'; });
   }
+  /* ---------- automatic PT translation (free Google Translate widget, runs in the visitor's browser) ---------- */
+  var GT = { orig:false, failed:false, ready:false, loading:false, wait:[] };
+  function trNote(tr){
+    if (LANG !== "pt") return "";
+    if (GT.failed) return '<div class="note notranslate" translate="no">' + esc(T("enNote")) + '</div>';
+    return '<div class="note tr-note notranslate" translate="no">' + ic("globe") + '<span>' + esc(T(tr ? "trOn" : "trOff")) + '</span><button type="button" id="elh-tr">' + esc(T(tr ? "trShowOrig" : "trTranslate")) + '</button></div>';
+  }
+  function gtCombo(){ return document.querySelector("#elh-gt select.goog-te-combo"); }
+  function gtLoad(cb){
+    if (GT.ready) return cb();
+    GT.wait.push(cb); if (GT.loading) return; GT.loading = true;
+    var d = document.createElement("div"); d.id = "elh-gt"; d.className = "notranslate"; d.style.cssText = "position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden"; document.body.appendChild(d);
+    var tries = 0;
+    function poll(){ var c = gtCombo(); if (c && c.options.length > 1){ GT.ready = true; GT.wait.splice(0).forEach(function(f){ f(); }); } else if (++tries < 80) setTimeout(poll, 150); else fail(); }
+    function fail(){ if (GT.failed) return; GT.failed = true; GT.wait = []; if (/^#\/a\//.test(location.hash)) route(); }
+    window.elhGtInit = function(){ try { new google.translate.TranslateElement({ pageLanguage:"en", includedLanguages:"pt", autoDisplay:false }, "elh-gt"); poll(); } catch(_){ fail(); } };
+    var sc = document.createElement("script"); sc.src = "https://translate.google.com/translate_a/element.js?cb=elhGtInit"; sc.async = true; sc.onerror = fail; document.head.appendChild(sc);
+  }
+  function gtOn(){ gtLoad(function(){ var c = gtCombo(); if (!c) return; c.value = "pt"; c.dispatchEvent(new Event("change")); }); }
+
   function setTitle(t){ document.title = t + " · Eleva " + T("tag"); }
 
   /* ---------- article helpers ---------- */
