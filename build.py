@@ -28,4 +28,14 @@ full = f"""<!doctype html>
 """
 (here/"docs").mkdir(exist_ok=True)
 (here/"docs/index.html").write_text(full, encoding="utf-8")
+# docs/app.js -> loaded by the small GHL loader, so GHL never needs re-pasting
+import json, re
+snip = base.replace("{{DATA_URL}}", PAGES_DATA)
+m = re.search(r"<script>(.*)</script>", snip, re.S)
+markup = (snip[:m.start()] + snip[m.end():]).strip()
+app = ("(function(){var s=document.currentScript,h=" + json.dumps(markup) + ";"
+       "var m=document.getElementById('elh-mount');var w=document.createElement('div');w.innerHTML=h;"
+       "var t=m||s;while(w.firstChild)t.parentNode.insertBefore(w.firstChild,t);if(m)m.remove();})();\n" + m.group(1))
+(here/"docs/app.js").write_text(app, encoding="utf-8")
+(here/"ghl-loader.html").write_text('<div id="elh-mount"></div>\n<script src="https://eleva-digital.github.io/help-center/app.js"></script>\n', encoding="utf-8")
 print("built", len(base), "bytes snippet")
