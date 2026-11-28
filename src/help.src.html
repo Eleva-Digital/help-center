@@ -431,17 +431,78 @@ body{top:0!important}
   }
 
   /* ---------- search ---------- */
+  /* Portuguese -> English search terms (articles are in English). Keys are accent-free. */
+  var PT_PHRASES = [["fluxo de trabalho","workflow"],["fluxos de trabalho","workflow"],["automacao","workflow"],["automacoes","workflow"],["e-mail","email"],["e mail","email"],
+    ["numero de telefone","phone number"],["dominio de e-mail","sending domain"],["dominio de email","sending domain"],["dominio de envio","sending domain"],["valores personalizados","custom values"],
+    ["campos personalizados","custom fields"],["campo personalizado","custom field"],["valor personalizado","custom value"],["redes sociais","social"],["rede social","social"],["cartao de credito","card"],
+    ["link de pagamento","payment link"],["links de pagamento","payment link"],["pagina de obrigado","thank you"],["landing page","landing page"],["chat ao vivo","live chat"],["chat widget","chat widget"],
+    ["inteligencia artificial","ai"],["assinatura de e-mail","email signature"],["assinatura de email","email signature"],["base de conhecimento","knowledge base"],["area de membros","membership"],
+    ["lista inteligente","smart list"],["listas inteligentes","smart list"],["caixa de entrada","inbox"],["tipo de calendario","calendar type"],["google meu negocio","google business"],["meu negocio","business profile"],["correio de voz","voicemail"]];
+  var PT_WORDS = { conectar:"connect",conexao:"connect",conectando:"connect",dominio:"domain",calendario:"calendar",agenda:"calendar",agendamento:"appointment",agendar:"book",reserva:"booking",
+    compromisso:"appointment",reuniao:"meeting",pagamento:"payment",pagar:"payment",cobranca:"invoice",fatura:"invoice",recibo:"receipt",assinatura:"subscription",plano:"plan",produto:"product",
+    pedido:"order",loja:"store",cupom:"coupon",desconto:"discount",imposto:"tax",frete:"shipping",estoque:"inventory",formulario:"form",pesquisa:"survey",questionario:"quiz",telefone:"phone",
+    ligacao:"call",chamada:"call",ligar:"call",numero:"number",mensagem:"message",mensagens:"message",conversa:"conversation",conversas:"conversation",texto:"text",sms:"sms",correio:"email",
+    funil:"funnel",funis:"funnel",pagina:"page",site:"website",sites:"website",blog:"blog",avaliacao:"review",avaliacoes:"review",reputacao:"reputation",aplicativo:"app",app:"app",celular:"mobile",
+    movel:"mobile",contato:"contact",contatos:"contact",cliente:"customer",clientes:"customer",lead:"lead",oportunidade:"opportunity",oportunidades:"opportunity",negocio:"business",empresa:"company",
+    tarefa:"task",tarefas:"task",nota:"note",etiqueta:"tag",tag:"tag",tags:"tag",importar:"import",importacao:"import",exportar:"export",excluir:"delete",apagar:"delete",deletar:"delete",remover:"remove",
+    criar:"create",adicionar:"add",editar:"edit",alterar:"change",mudar:"change",atualizar:"update",configurar:"setup",configuracao:"settings",configuracoes:"settings",ajuste:"settings",ajustes:"settings",
+    usuario:"user",usuarios:"user",equipe:"team",permissao:"permission",permissoes:"permission",senha:"password",login:"login",entrar:"login",acesso:"access",seguranca:"security",
+    relatorio:"report",relatorios:"report",painel:"dashboard",estatistica:"stats",anuncio:"ads",anuncios:"ads",campanha:"campaign",campanhas:"campaign",disparo:"broadcast",modelo:"template",modelos:"template",
+    gatilho:"trigger",gatilhos:"trigger",acao:"action",acoes:"action",condicao:"condition",espera:"wait",lembrete:"reminder",notificacao:"notification",notificacoes:"notification",
+    integracao:"integration",integracoes:"integration",integrar:"integration",documento:"document",documentos:"document",contrato:"contract",contratos:"contract",proposta:"proposal",orcamento:"estimate",
+    curso:"course",cursos:"course",membros:"membership",comunidade:"community",comunidades:"community",certificado:"certificate",video:"video",imagem:"image",imagens:"image",midia:"media",arquivo:"file",
+    arquivos:"file",biblioteca:"library",idioma:"language",traduzir:"translate",traducao:"translation",fuso:"timezone",horario:"time",disponibilidade:"availability",feriado:"holiday",
+    voz:"voice",gravacao:"recording",caixa:"inbox",webhook:"webhook",erro:"error",problema:"troubleshoot",problemas:"troubleshoot",nao:"not",funciona:"working",
+    funcionando:"working",enviar:"send",envio:"sending",recebido:"inbound",verificar:"verify",verificacao:"verification",registro:"registration",marca:"brand",personalizado:"custom",
+    personalizar:"customize",rastreamento:"tracking",pixel:"pixel",codigo:"code",botao:"button",cabecalho:"header",rodape:"footer",menu:"menu",cor:"color",fonte:"font",
+    agente:"agent",robo:"bot",assistente:"assistant",ia:"ai",inteligencia:"ai",resposta:"reply",respostas:"reply",automatica:"auto",automatico:"auto",pipeline:"pipeline",etapa:"stage",etapas:"stage",
+    afiliado:"affiliate",afiliados:"affiliate",indicacao:"referral",prova:"proof",social:"social",postagem:"post",postar:"post",publicar:"publish",agendador:"planner",
+    whatsapp:"whatsapp",instagram:"instagram",facebook:"facebook",google:"google",stripe:"stripe",paypal:"paypal",zoom:"zoom",outlook:"outlook",gmail:"gmail" };
+  var PT_STOP = { o:1,a:1,os:1,as:1,um:1,uma:1,de:1,do:1,da:1,dos:1,das:1,em:1,no:1,na:1,nos:1,nas:1,para:1,pra:1,por:1,com:1,sem:1,e:1,ou:1,que:1,como:1,meu:1,minha:1,meus:1,minhas:1,
+    seu:1,sua:1,ao:1,aos:1,se:1,eu:1,posso:1,fazer:1,faco:1,qual:1,quais:1,onde:1,quando:1,porque:1,mais:1,muito:1,isso:1,esse:1,essa:1,este:1,esta:1,ver:1,usar:1,uso:1 };
+  function ptWord(w){
+    if (PT_STOP[w]) return null;
+    if (PT_WORDS[w]) return PT_WORDS[w];
+    var c = [w.replace(/oes$/, "ao"), w.replace(/aes$/, "ao"), w.replace(/ais$/, "al"), w.replace(/eis$/, "el"), w.replace(/s$/, ""), w.replace(/es$/, "")];
+    for (var i = 0; i < c.length; i++) if (PT_WORDS[c[i]]) return PT_WORDS[c[i]];
+    return w;
+  }
+  // query -> list of alternatives per term, e.g. [["dominio","domain"],["conectar","connect"]]
+  function terms(q){
+    var n = norm(q), out = [];
+    if (LANG === "pt") PT_PHRASES.forEach(function(p){ if (n.indexOf(p[0]) > -1){ out.push([p[1]]); n = n.split(p[0]).join(" "); } });
+    n.split(/[^a-z0-9]+/).forEach(function(w){
+      if (!(w.length > 1 || /\d/.test(w))) return;
+      if (LANG !== "pt"){ out.push([w]); return; }
+      var e = ptWord(w); if (e === null) return;
+      out.push(e === w ? [w] : [w].concat(e.split(" ")));
+    });
+    return out;
+  }
+  function termScore(a, alts){
+    var best = 0;
+    for (var k = 0; k < alts.length; k++){
+      var w = alts[k], sc = 0;
+      if (a._t.indexOf(w) > -1) sc += (new RegExp("\\b" + w).test(a._t) ? 10 : 6);
+      if (a._k.indexOf(w) > -1) sc += 3;
+      if (a._x.indexOf(w) > -1) sc += 2;
+      if (sc > best) best = sc;
+    }
+    return best;
+  }
   function search(q, max){
-    var qs = norm(q).split(/[^a-z0-9]+/).filter(function(w){ return w.length > 1 || /\d/.test(w); });
+    var qs = terms(q);
     if (!qs.length) return [];
+    // in PT, ignore words that match nothing at all (so one unknown word doesn't empty the results)
+    if (LANG === "pt" && qs.length > 1){
+      var kept = qs.filter(function(alts){ for (var i = 0; i < ARTS.length; i++) if (termScore(ARTS[i], alts)) return true; return false; });
+      if (kept.length) qs = kept;
+    }
     var phrase = norm(q).trim(), out = [];
     for (var i = 0; i < ARTS.length; i++){
       var a = ARTS[i], s = 0, ok = true;
       for (var j = 0; j < qs.length; j++){
-        var w = qs[j], sc = 0;
-        if (a._t.indexOf(w) > -1) sc += (new RegExp("\\b" + w).test(a._t) ? 10 : 6);
-        if (a._k.indexOf(w) > -1) sc += 3;
-        if (a._x.indexOf(w) > -1) sc += 2;
+        var sc = termScore(a, qs[j]);
         if (!sc){ ok = false; break; }
         s += sc;
       }
@@ -455,7 +516,8 @@ body{top:0!important}
     return out.slice(0, max || 400).map(function(x){ return x[1]; });
   }
   function hl(text, q){
-    var ws = norm(q).split(/[^a-z0-9]+/).filter(function(w){ return w.length > 1; }); var s = esc(text);
+    if (LANG === "pt" && !GT.failed) return esc(text); // let Google translate whole titles, not highlight fragments
+    var ws = []; terms(q).forEach(function(alts){ alts.forEach(function(w){ if (w.length > 1) ws.push(w); }); }); var s = esc(text);
     if (!ws.length) return s;
     var src = norm(text), marks = [];
     ws.forEach(function(w){ var i = -1; while ((i = src.indexOf(w, i + 1)) > -1) marks.push([i, i + w.length]); });
@@ -473,9 +535,9 @@ body{top:0!important}
       if (!q){ box.classList.remove("show"); box.innerHTML = ""; return; }
       var r = search(q), top = r.slice(0, 7);
       box.innerHTML = top.length ? top.map(function(a, i){
-        return '<a href="#/a/' + a.id + '" data-i="' + i + '"><div class="r-t">' + hl(a.t, q) + '</div><div class="r-p">' + esc(pathOf(a)) + '</div><div class="r-x">' + hl(a.x, q) + '</div></a>';
-      }).join("") + (r.length > 7 ? '<a class="r-more" href="#/s/' + encodeURIComponent(q) + '">' + esc(T("seeAll", { n:r.length })) + ' →</a>' : "")
-        : '<div class="r-none">' + esc(T("noRes", { q:q })) + '</div>';
+        return '<a href="#/a/' + a.id + '" data-i="' + i + '"><div class="r-t">' + hl(a.t, q) + '</div><div class="r-p notranslate">' + esc(pathOf(a)) + '</div><div class="r-x">' + hl(a.x, q) + '</div></a>';
+      }).join("") + (r.length > 7 ? '<a class="r-more notranslate" href="#/s/' + encodeURIComponent(q) + '">' + esc(T("seeAll", { n:r.length })) + ' →</a>' : "")
+        : '<div class="r-none notranslate">' + esc(T("noRes", { q:q })) + '</div>';
       box.classList.add("show");
     }
     var tmr; input.addEventListener("input", function(){ clearTimeout(tmr); tmr = setTimeout(draw, 60); });
@@ -516,30 +578,30 @@ body{top:0!important}
     root.classList.remove("view-inner", "view-article");
     var pop = popularList();
     var chips = TOPICS[LANG].map(function(t){ return '<button class="chip" type="button" data-q="' + esc(TOPIC_Q[t] || t) + '">' + esc(t) + '</button>'; }).join("");
-    main.innerHTML = '<div class="view notranslate" translate="no">' +
-      '<div class="hero"><span class="kicker">' + ic("doc", 2) .replace("<svg", '<svg width="14" height="14"') + '<span><b>' + IDX.count.toLocaleString(T("locale")) + '</b> ' + esc(T("articles")) + ' · ' + esc(T("updatedM")) + '</span></span>' +
-      '<h1>' + esc(T("h1")) + '</h1><p class="sub">' + esc(T("sub")) + '</p>' + searchBox("elh-q") + '<div class="chips">' + chips + '</div></div>' +
-      '<section class="block reveal"><div class="block-h"><h2>' + esc(T("popular")) + '</h2></div><div class="card pop">' +
+    main.innerHTML = '<div class="view' + vwCls() + '">' +
+      '<div class="hero"><span class="kicker notranslate">' + ic("doc", 2) .replace("<svg", '<svg width="14" height="14"') + '<span><b>' + IDX.count.toLocaleString(T("locale")) + '</b> ' + esc(T("articles")) + ' · ' + esc(T("updatedM")) + '</span></span>' +
+      '<h1 class="notranslate">' + esc(T("h1")) + '</h1><p class="sub notranslate">' + esc(T("sub")) + '</p>' + searchBox("elh-q") + '<div class="chips notranslate">' + chips + '</div></div>' +
+      '<section class="block reveal"><div class="block-h notranslate"><h2>' + esc(T("popular")) + '</h2></div><div class="card pop">' +
         pop.map(function(a){ return '<a href="#/a/' + a.id + '"><span class="ic">' + ic(catIcon(CATS[a.c] ? CATS[a.c].n : "")) + '</span><span>' + esc(a.t) + '</span>' + ic("arrow").replace("<svg", '<svg class="ar"') + '</a>'; }).join("") + '</div></section>' +
-      '<section class="block reveal"><div class="block-h"><h2>' + esc(T("browse")) + '</h2><small>' + IDX.cats.length + ' ' + esc(T("cats")) + '</small></div><div class="cats stag">' +
+      '<section class="block reveal"><div class="block-h notranslate"><h2>' + esc(T("browse")) + '</h2><small>' + IDX.cats.length + ' ' + esc(T("cats")) + '</small></div><div class="cats stag">' +
         IDX.cats.map(function(c, i){
           var sample = (LANG === "en" && c.d) ? c.d : c.folders.slice(0, 4).map(function(f){ return f.n; }).join(" · ");
-          return '<a class="card cat" style="--n:' + i + '" href="#/c/' + c.id + '"><span class="ci">' + ic(catIcon(c.n)) + '</span><h3>' + esc(cn(c.n)) + '</h3><p>' + esc(sample) + '</p><div class="cnt">' + esc(T("folderN", { n:c.count })) + '</div></a>';
+          return '<a class="card cat" style="--n:' + i + '" href="#/c/' + c.id + '"><span class="ci">' + ic(catIcon(c.n)) + '</span><h3 class="notranslate">' + esc(cn(c.n)) + '</h3><p>' + esc(sample) + '</p><div class="cnt notranslate">' + esc(T("folderN", { n:c.count })) + '</div></a>';
         }).join("") + '</div></section></div>';
     bindSearch($("elh-q"), $("elh-q-r"));
     main.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){ var i = $("elh-q"); i.value = b.getAttribute("data-q"); i.focus(); i.dispatchEvent(new Event("input")); }); });
     reveal(); setTitle(T("tag"));
   }
   function crumbs(list){
-    return '<nav class="crumbs"><a href="#/">' + esc(T("home")) + '</a>' + list.map(function(x){ return '<i>/</i>' + (x[1] ? '<a href="' + x[1] + '">' + esc(x[0]) + '</a>' : '<span>' + esc(x[0]) + '</span>'); }).join("") + '</nav>';
+    return '<nav class="crumbs notranslate"><a href="#/">' + esc(T("home")) + '</a>' + list.map(function(x){ return '<i>/</i>' + (x[1] ? '<a href="' + x[1] + '">' + esc(x[0]) + '</a>' : '<span>' + esc(x[0]) + '</span>'); }).join("") + '</nav>';
   }
   function artItem(a, q){ return '<li><a href="#/a/' + a.id + '">' + ic("doc") + '<span><b>' + (q ? hl(a.t, q) : esc(a.t)) + '</b><small>' + (q ? hl(a.x, q) : esc(a.x)) + '</small></span></a></li>'; }
   function viewCat(id, openF){
     var c = CATS[id]; if (!c) return viewHome();
     root.classList.add("view-inner"); root.classList.remove("view-article");
     var byF = {}; ARTS.forEach(function(a){ if (a.c === id) (byF[a.f] = byF[a.f] || []).push(a); });
-    main.innerHTML = '<div class="view notranslate" translate="no">' + crumbs([[cn(c.n)]]) +
-      '<div class="page-h"><span class="ci">' + ic(catIcon(c.n)) + '</span><div><h1>' + esc(cn(c.n)) + '</h1><p>' + esc(T("inCat", { n:c.count, f:c.folders.length })) + '</p></div></div>' +
+    main.innerHTML = '<div class="view' + vwCls() + '">' + crumbs([[cn(c.n)]]) +
+      '<div class="page-h"><span class="ci">' + ic(catIcon(c.n)) + '</span><div><h1 class="notranslate">' + esc(cn(c.n)) + '</h1><p class="notranslate">' + esc(T("inCat", { n:c.count, f:c.folders.length })) + '</p></div></div>' +
       c.folders.map(function(f, i){
         var list = (byF[f.id] || []); var open = openF ? f.id === openF : (c.folders.length <= 3 || i === 0);
         return '<div class="card folder' + (open ? " open" : "") + '" data-f="' + f.id + '"><button type="button" aria-expanded="' + open + '">' + ic("chev").replace("<svg", '<svg class="chev"') + '<b>' + esc(f.n) + '</b><span class="count">' + list.length + '</span></button>' +
@@ -552,9 +614,9 @@ body{top:0!important}
   function viewSearch(q){
     root.classList.add("view-inner"); root.classList.remove("view-article");
     var r = search(q);
-    main.innerHTML = '<div class="view notranslate" translate="no">' + crumbs([[T("resultsT")]]) + searchBox("elh-q2") +
-      '<section class="block"><div class="block-h"><h2>' + esc(T("results", { n:r.length, q:q })) + '</h2></div>' +
-      (r.length ? '<div class="card"><ul class="alist" style="padding:8px">' + r.slice(0, 120).map(function(a){ return artItem(a, q); }).join("") + '</ul></div>' : '<div class="card" style="padding:26px;text-align:center;color:var(--muted)">' + esc(T("noRes", { q:q })) + '</div>') + '</section></div>';
+    main.innerHTML = '<div class="view' + vwCls() + '">' + crumbs([[T("resultsT")]]) + searchBox("elh-q2") +
+      '<section class="block"><div class="block-h notranslate"><h2>' + esc(T("results", { n:r.length, q:q })) + '</h2></div>' +
+      (r.length ? '<div class="card"><ul class="alist" style="padding:8px">' + r.slice(0, 120).map(function(a){ return artItem(a, q); }).join("") + '</ul></div>' : '<div class="card notranslate" style="padding:26px;text-align:center;color:var(--muted)">' + esc(T("noRes", { q:q })) + '</div>') + '</section></div>';
     var i = $("elh-q2"); i.value = q; bindSearch(i, $("elh-q2-r"));
     setTitle(T("resultsT"));
   }
@@ -595,13 +657,14 @@ body{top:0!important}
     if (GT.failed) return '<div class="note notranslate" translate="no">' + esc(T("enNote")) + '</div>';
     return '<div class="note tr-note notranslate" translate="no">' + ic("globe") + '<span>' + esc(T(tr ? "trOn" : "trOff")) + '</span><button type="button" id="elh-tr">' + esc(T(tr ? "trShowOrig" : "trTranslate")) + '</button></div>';
   }
+  function vwCls(){ return LANG === "pt" && !GT.failed ? "" : " notranslate"; }
   function gtCombo(){ return document.querySelector("#elh-gt select.goog-te-combo"); }
   function gtLoad(cb){
     if (GT.ready) return cb();
     GT.wait.push(cb); if (GT.loading) return; GT.loading = true;
     var d = document.createElement("div"); d.id = "elh-gt"; d.className = "notranslate"; d.style.cssText = "position:absolute;left:-9999px;top:0;width:1px;height:1px;overflow:hidden"; document.body.appendChild(d);
     var tries = 0;
-    function poll(){ var c = gtCombo(); if (c && c.options.length > 1){ GT.ready = true; GT.wait.splice(0).forEach(function(f){ f(); }); } else if (++tries < 80) setTimeout(poll, 150); else fail(); }
+    function poll(){ var c = gtCombo(); if (c && [].some.call(c.options, function(o){ return o.value === "pt"; })){ GT.ready = true; GT.wait.splice(0).forEach(function(f){ f(); }); } else if (++tries < 80) setTimeout(poll, 150); else fail(); }
     function fail(){ if (GT.failed) return; GT.failed = true; GT.wait = []; if (/^#\/a\//.test(location.hash)) route(); }
     window.elhGtInit = function(){ try { new google.translate.TranslateElement({ pageLanguage:"en", includedLanguages:"pt", autoDisplay:false }, "elh-gt"); poll(); } catch(_){ fail(); } };
     var sc = document.createElement("script"); sc.src = "https://translate.google.com/translate_a/element.js?cb=elhGtInit"; sc.async = true; sc.onerror = fail; document.head.appendChild(sc);
@@ -652,6 +715,7 @@ body{top:0!important}
     else if (p[0] === "s" && p[1]) viewSearch(decodeURIComponent(p.slice(1).join("/")));
     else viewHome();
     if (!(p[0] === "a")) window.scrollTo(0, 0);
+    if (p[0] !== "a" && LANG === "pt" && !GT.failed)gtOn();
   }
   window.addEventListener("hashchange", route);
 
